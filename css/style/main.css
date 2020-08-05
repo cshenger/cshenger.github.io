@@ -1,7 +1,7 @@
 :root {
   --main-color: #eb5757;
   --bg-color: #f4f4f4;
-  --bg-content-color: rgba(255,255,255,0.8);
+  --bg-content-color: rgba(255,255,255,0.85);
   --bg-menu: rgba(255,255,255,0.6);
   --bg-tag-color: #f4f4f4;
   --bg-cat-color: #c2c2c2;
@@ -936,6 +936,13 @@ overflows table td {
 }
 .cover img {
   border-radius: 50%;
+  transform: rotate(0deg);
+  transition: all 0.8s ease-in-out;
+}
+.cover img:hover {
+  box-shadow: 0 0 5px 8px rgba(0,176,218,0.8);
+  transform: rotate(360deg);
+  transition: all 0.8s ease-in-out;
 }
 .cover .cover__intro {
   color: #fff;
