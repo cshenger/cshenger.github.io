@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>使用fabric.js+pdf.js实现简易盖章 | cshenger</title>
+    
+    <meta name="keywords" content="canvas, pdf.js, fabric.js, vue">
+    
+
+    <!-- OpenGraph -->
+    
+    <meta name="description" content="最近公司的一个项目打算实现在线预览文档并给这个文档改一个公章，然后要求前端可以让用户实现盖章拖动，传给后端的数据只需要知道盖章的位置和盖在文档得的哪一页，于是让先弄一个 demo 试试方案。调查了一番之后，觉得可以使用pdf.js实现预览文档，公章的操作则可以用farbic.js实现。最终呈现的效果类似这样： pdf.js 实现预览首先在第一步实现 PDF 的预览这里就碰到了问题，官方有一个pdf">
+<meta name="keywords" content="canvas,pdf.js,fabric.js,vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用fabric.js+pdf.js实现简易盖章">
+<meta property="og:url" content="http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/index.html">
+<meta property="og:site_name" content="cshenger">
+<meta property="og:description" content="最近公司的一个项目打算实现在线预览文档并给这个文档改一个公章，然后要求前端可以让用户实现盖章拖动，传给后端的数据只需要知道盖章的位置和盖在文档得的哪一页，于是让先弄一个 demo 试试方案。调查了一番之后，觉得可以使用pdf.js实现预览文档，公章的操作则可以用farbic.js实现。最终呈现的效果类似这样： pdf.js 实现预览首先在第一步实现 PDF 的预览这里就碰到了问题，官方有一个pdf">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/1.png">
+<meta property="og:image" content="http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/2.jpg">
+<meta property="og:updated_time" content="2020-08-10T03:19:25.166Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="使用fabric.js+pdf.js实现简易盖章">
+<meta name="twitter:description" content="最近公司的一个项目打算实现在线预览文档并给这个文档改一个公章，然后要求前端可以让用户实现盖章拖动，传给后端的数据只需要知道盖章的位置和盖在文档得的哪一页，于是让先弄一个 demo 试试方案。调查了一番之后，觉得可以使用pdf.js实现预览文档，公章的操作则可以用farbic.js实现。最终呈现的效果类似这样： pdf.js 实现预览首先在第一步实现 PDF 的预览这里就碰到了问题，官方有一个pdf">
+<meta name="twitter:image" content="http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/1.png">
+    
+
+    <!-- feed -->
+    
+
+    <link rel="stylesheet" href="/css/style/main.css">
+
+    
+
+    
+    
+    <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+    
+    <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+    
+    
+    
+
+    
+    <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+    
+
+    
+
+</head>
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                cshenger 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="cover-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="cover-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="cover-menu button">
+                        归档
+                    </a>
+                
+            </div>
+        
+        
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"/>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"/>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="dropdown-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="dropdown-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="dropdown-menu button">
+                        归档
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        使用fabric.js+pdf.js实现简易盖章
+    </h1>
+    <div class="post-title__meta">
+        
+        <a href="/archives/2020/08/" class="button">
+    2020-08-10
+</a>
+        
+        
+        
+    <span class="separate-dot"></span><a href="/categories/学习/" class="button">学习</a>
+
+
+        
+        
+     
+ 
+
+ 
+    </div>
+</div>
+
+
+<div class="post__with-side">
+    <aside class="post-side">
+        <div class="post-side__toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pdf-js-实现预览"><span class="toc-text">pdf.js 实现预览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fabric-js-实现盖章"><span class="toc-text">fabric.js 实现盖章</span></a></li></ol>
+        </div>
+    </aside>
+    <article class="post content-card">
+        <div class="post__header">
+            
+            
+            
+            <!-- 
+                    
+    <div class="post__expire" id="post-expired-notify">
+        <p>
+            本文最后更新于 <span id="expire-date"></span> 天前，文中部分描述可能已经过时。
+        </p>
+    </div>
+    <script>
+        (() => {
+            var update = Date.parse("2020-08-10"),
+                date = new Date(),
+                now = date.getTime(),
+                expire = now - update,
+                expire_days = Math.floor(expire/(24*3600*1000));
+            if (expire_days >= 120) {
+                document.querySelectorAll('#expire-date')[0].innerHTML = expire_days;
+                document.querySelectorAll('#post-expired-notify')[0].style.display = 'block';
+            }
+        })();
+    </script>
+
+                 -->
+        </div>
+        <div class="post__content">
+            <div class="md-content">
+                <p>最近公司的一个项目打算实现在线预览文档并给这个文档改一个公章，然后要求前端可以让用户实现盖章拖动，传给后端的数据只需要知道盖章的位置和盖在文档得的哪一页，于是让先弄一个 demo 试试方案。<br>调查了一番之后，觉得可以使用<a href="http://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">pdf.js</a>实现预览文档，公章的操作则可以用<a href="http://fabricjs.com/" target="_blank" rel="noopener">farbic.js</a>实现。最终呈现的效果类似这样：<br><img src="//cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/1.png" alt="最终效果"></p>
+<h2 id="pdf-js-实现预览"><a href="#pdf-js-实现预览" class="headerlink" title="pdf.js 实现预览"></a>pdf.js 实现预览</h2><p>首先在第一步实现 PDF 的预览这里就碰到了问题，官方有一个<strong>pdfjs-dist</strong>的库，网上也有相关的封装方法，但是经过多次试验之后始终提示有问题，所以放弃 import 的导入方式采用最古老最直接的 script 导入。这个前提是你需要到官网下载相关包。因为项目是通过 vue-cli3 搭建，需要将资源包放到 static 文件夹下即可。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"static/pdfjs/build/pdf.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>接下来就是实现预览，这里直接参考<a href="http://jsfiddle.net/pdfjs/wagvs9Lf/" target="_blank" rel="noopener">官方样例</a>只是我把它改造成了 vue 的版本对照一下一看便知</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"center"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">"small"</span> @<span class="attr">click</span>=<span class="string">"prevPage"</span>&gt;</span>Previous<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">"small"</span> @<span class="attr">click</span>=<span class="string">"nextPage"</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">el-button</span>&gt;</span></span><br><span class="line">    &amp;nbsp; &amp;nbsp;</span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span>&gt;</span>Page: &#123;&#123; pageNum &#125;&#125; / <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"page_count"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"the-canvas"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// import pdfjsLib from "pdfjs-dist";</span></span><br><span class="line"><span class="comment">// pdfjsLib.GlobalWorkerOptions.workerSrc = "pdfjs-dist/build/pdf.worker.js";</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> pdfjsLib = <span class="built_in">window</span>[<span class="string">"pdfjs-dist/build/pdf"</span>];</span><br><span class="line">pdfjsLib.GlobalWorkerOptions.workerSrc = <span class="string">`http://<span class="subst">$&#123;<span class="built_in">window</span>.location.host&#125;</span>/static/pdfjs/build/pdf.worker.js`</span>;</span><br><span class="line"><span class="comment">// pdfjsLib.disableWorker = true;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">"pdfPreview"</span>,</span><br><span class="line">  props: &#123;</span><br><span class="line">    pdfUrl: &#123;</span><br><span class="line">      type: <span class="built_in">String</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    scale: &#123;</span><br><span class="line">      type: <span class="built_in">Number</span>,</span><br><span class="line">      <span class="keyword">default</span>: <span class="number">1.5</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      pdfDoc: <span class="literal">null</span>,</span><br><span class="line">      pageNum: <span class="number">1</span>,</span><br><span class="line">      pageRendering: <span class="literal">false</span>,</span><br><span class="line">      pageNumPending: <span class="literal">null</span>,</span><br><span class="line">      canvas: <span class="literal">null</span>,</span><br><span class="line">      ctx: <span class="literal">null</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    renderPage(num) &#123;</span><br><span class="line">      <span class="keyword">let</span> _this = <span class="keyword">this</span>;</span><br><span class="line">      <span class="keyword">this</span>.pageRendering = <span class="literal">true</span>;</span><br><span class="line">      <span class="comment">// Using promise to fetch the page</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.pdfDoc.getPage(num).then(<span class="function">(<span class="params">page</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> viewport = page.getViewport(&#123; <span class="attr">scale</span>: _this.scale &#125;);</span><br><span class="line">        _this.canvas.height = viewport.height;</span><br><span class="line">        _this.canvas.width = viewport.width;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Render PDF page into canvas context</span></span><br><span class="line">        <span class="keyword">let</span> renderContext = &#123;</span><br><span class="line">          canvasContext: _this.ctx,</span><br><span class="line">          viewport: viewport,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">let</span> renderTask = page.render(renderContext);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Wait for rendering to finish</span></span><br><span class="line">        renderTask.promise.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          _this.pageRendering = <span class="literal">false</span>;</span><br><span class="line">          <span class="keyword">if</span> (_this.pageNumPending !== <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// New page rendering is pending</span></span><br><span class="line">            <span class="keyword">this</span>.renderPage(_this.pageNumPending);</span><br><span class="line">            _this.pageNumPending = <span class="literal">null</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    queueRenderPage(num) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.pageRendering) &#123;</span><br><span class="line">        <span class="keyword">this</span>.pageNumPending = num;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.renderPage(num);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    prevPage() &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.pageNum &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.pageNum--;</span><br><span class="line">      <span class="keyword">this</span>.queueRenderPage(<span class="keyword">this</span>.pageNum);</span><br><span class="line">    &#125;,</span><br><span class="line">    nextPage() &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.pageNum &gt;= <span class="keyword">this</span>.pdfDoc.numPages) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.pageNum++;</span><br><span class="line">      <span class="keyword">this</span>.queueRenderPage(<span class="keyword">this</span>.pageNum);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted() &#123;</span><br><span class="line">    <span class="keyword">this</span>.canvas = <span class="built_in">document</span>.getElementById(<span class="string">"the-canvas"</span>);</span><br><span class="line">    <span class="keyword">this</span>.ctx = <span class="keyword">this</span>.canvas.getContext(<span class="string">"2d"</span>);</span><br><span class="line"></span><br><span class="line">    pdfjsLib.getDocument(<span class="keyword">this</span>.pdfUrl).promise.then(<span class="function">(<span class="params">pdfDoc_</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.pdfDoc = pdfDoc_;</span><br><span class="line">      <span class="built_in">document</span>.getElementById(<span class="string">"page_count"</span>).textContent = <span class="keyword">this</span>.pdfDoc.numPages;</span><br><span class="line">      <span class="keyword">this</span>.renderPage(<span class="keyword">this</span>.pageNum).then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.$emit(<span class="string">"renderPdf"</span>, &#123;</span><br><span class="line">          width: <span class="keyword">this</span>.canvas.width,</span><br><span class="line">          height: <span class="keyword">this</span>.canvas.height,</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我将这一部分命名为一个 PdfPreview 的组件，在父组件中调用</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"elesign"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- pdf的预览 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pdf-preview</span> <span class="attr">ref</span>=<span class="string">"preview"</span> <span class="attr">:pdfUrl</span>=<span class="string">"url"</span> @<span class="attr">renderPdf</span>=<span class="string">"renderPdf"</span>&gt;</span><span class="tag">&lt;/<span class="name">pdf-preview</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 盖章部分 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"ele-canvas"</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"ele-control"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">      <span class="attr">size</span>=<span class="string">"small"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">icon</span>=<span class="string">"el-icon-plus"</span></span></span><br><span class="line"><span class="tag">      @<span class="attr">click</span>=<span class="string">"addSignature"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">:disabled</span>=<span class="string">"hasSigna"</span></span></span><br><span class="line"><span class="tag">      &gt;</span>添加签章<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">      <span class="attr">type</span>=<span class="string">"danger"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">size</span>=<span class="string">"small"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">icon</span>=<span class="string">"el-icon-delete"</span></span></span><br><span class="line"><span class="tag">      @<span class="attr">click</span>=<span class="string">"removeSignature"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">:disabled</span>=<span class="string">"!hasSigna"</span></span></span><br><span class="line"><span class="tag">      &gt;</span>删除签章<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">"small"</span> @<span class="attr">click</span>=<span class="string">"getSignature"</span> <span class="attr">:disabled</span>=<span class="string">"!hasSigna"</span></span></span><br><span class="line"><span class="tag">      &gt;</span>获取数据<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- &lt;img src="../assets/logo.png" id="img" style="display:none" /&gt; --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样便实现了简易的预览 pdf<br><img src="//cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/2.jpg" alt="预览"></p>
+<h2 id="fabric-js-实现盖章"><a href="#fabric-js-实现盖章" class="headerlink" title="fabric.js 实现盖章"></a>fabric.js 实现盖章</h2><p>翻看 farbic 的文档需要一个 canvas 作为载体，而我们最终想实现把章盖在问文档上这样的效果，那么其实只是个展示问题。于是最简单的实现方案来了，我只需要在预览的 pdf 元素上叠加一个长宽一样的 canavs 就能实现效果</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.elesign</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">  <span class="selector-class">.canvas-container</span> &#123;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">42px</span>;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#ele-canvas</span> &#123;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#5ea6ef</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我需要做的就是在 PDF 预览生成以后将 PDF 的长宽传给父层，父层获取数据之后修改 fabric 的 canvas 就可以了，具体代码传值参考上面得代码片段中的<strong>mounted</strong>。然后父层获取：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">renderPdf(data) &#123;</span><br><span class="line"> <span class="keyword">this</span>.whDatas = data;</span><br><span class="line"> <span class="built_in">document</span>.querySelector(<span class="string">".elesign"</span>).style.width = data.width + <span class="string">"px"</span>;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<p>剩下的问题就是添加盖章的图片并可以在绘图区内随意拖动缩放，这里全是官方文档的东西我直接展示加了注释的代码吧，很好理解：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"elesign"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- pdf的预览 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pdf-preview</span></span></span><br><span class="line"><span class="tag">      <span class="attr">ref</span>=<span class="string">"preview"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">:pdfUrl</span>=<span class="string">"url"</span></span></span><br><span class="line"><span class="tag">      @<span class="attr">renderPdf</span>=<span class="string">"renderPdf"</span></span></span><br><span class="line"><span class="tag">    &gt;</span><span class="tag">&lt;/<span class="name">pdf-preview</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 盖章部分 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"ele-canvas"</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"ele-control"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">size</span>=<span class="string">"small"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">icon</span>=<span class="string">"el-icon-plus"</span></span></span><br><span class="line"><span class="tag">        @<span class="attr">click</span>=<span class="string">"addSignature"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:disabled</span>=<span class="string">"hasSigna"</span></span></span><br><span class="line"><span class="tag">        &gt;</span>添加签章<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">      &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">type</span>=<span class="string">"danger"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">size</span>=<span class="string">"small"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">icon</span>=<span class="string">"el-icon-delete"</span></span></span><br><span class="line"><span class="tag">        @<span class="attr">click</span>=<span class="string">"removeSignature"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:disabled</span>=<span class="string">"!hasSigna"</span></span></span><br><span class="line"><span class="tag">        &gt;</span>删除签章<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">      &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">el-button</span> <span class="attr">size</span>=<span class="string">"small"</span> @<span class="attr">click</span>=<span class="string">"getSignature"</span> <span class="attr">:disabled</span>=<span class="string">"!hasSigna"</span></span></span><br><span class="line"><span class="tag">        &gt;</span>获取数据<span class="tag">&lt;/<span class="name">el-button</span></span></span><br><span class="line"><span class="tag">      &gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- &lt;img src="../assets/logo.png" id="img" style="display:none" /&gt; --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; fabric &#125; <span class="keyword">from</span> <span class="string">"fabric"</span>;</span><br><span class="line"><span class="keyword">import</span> pdfPreview <span class="keyword">from</span> <span class="string">"./pdfPreview"</span>;</span><br><span class="line"><span class="keyword">let</span> goodtop, goodleft, boundingObject;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">"PdfDemo"</span>,</span><br><span class="line">  components: &#123;</span><br><span class="line">    pdfPreview,</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      url: <span class="string">`http://<span class="subst">$&#123;<span class="built_in">window</span>.location.host&#125;</span>/static/doc/hello.pdf`</span>,</span><br><span class="line">      canvas: <span class="literal">null</span>,</span><br><span class="line">      whDatas: <span class="literal">null</span>,</span><br><span class="line">      signaData: &#123;&#125;,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  computed: &#123;</span><br><span class="line">    hasSigna() &#123;</span><br><span class="line">      <span class="keyword">return</span> !!<span class="keyword">this</span>.canvas &amp;&amp; !!<span class="keyword">this</span>.canvas.getObjects()[<span class="number">0</span>] ? <span class="literal">true</span> : <span class="literal">false</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  watch: &#123;</span><br><span class="line">    whDatas: &#123;</span><br><span class="line">      handler() &#123;</span><br><span class="line">        <span class="keyword">if</span> (!!<span class="keyword">this</span>.whDatas) &#123;</span><br><span class="line">          <span class="keyword">this</span>.renderFabric();</span><br><span class="line">          <span class="keyword">this</span>.canvasEvents();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    <span class="comment">// 设置绘图区域宽高</span></span><br><span class="line">    renderPdf(data) &#123;</span><br><span class="line">      <span class="keyword">this</span>.whDatas = data;</span><br><span class="line">      <span class="built_in">document</span>.querySelector(<span class="string">".elesign"</span>).style.width = data.width + <span class="string">"px"</span>;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成绘图区域</span></span><br><span class="line">    renderFabric() &#123;</span><br><span class="line">      <span class="keyword">let</span> canvaEle = <span class="built_in">document</span>.querySelector(<span class="string">"#ele-canvas"</span>);</span><br><span class="line">      canvaEle.width = <span class="keyword">this</span>.whDatas.width;</span><br><span class="line">      canvaEle.height = <span class="keyword">this</span>.whDatas.height;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">this</span>.canvas = <span class="keyword">new</span> fabric.Canvas(canvaEle);</span><br><span class="line">      <span class="keyword">let</span> container = <span class="built_in">document</span>.querySelector(<span class="string">".canvas-container"</span>);</span><br><span class="line">      container.style.position = <span class="string">"absolute"</span>;</span><br><span class="line">      container.style.top = <span class="string">"42px"</span>;</span><br><span class="line">      <span class="comment">// console.log(this.canvas);</span></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 相关事件操作哟</span></span><br><span class="line">    canvasEvents() &#123;</span><br><span class="line">      <span class="comment">// 拖拽边界 不能将图片拖拽到绘图区域外</span></span><br><span class="line">      <span class="keyword">this</span>.canvas.observe(<span class="string">"object:moving"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> obj = e.target;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (obj.height &gt; obj.canvas.height || obj.width &gt; obj.canvas.width) &#123;</span><br><span class="line">          obj.setScaleY(obj.originalState.scaleY);</span><br><span class="line">          obj.setScaleX(obj.originalState.scaleX);</span><br><span class="line">        &#125;</span><br><span class="line">        obj.setCoords();</span><br><span class="line">        <span class="keyword">if</span> (</span><br><span class="line">          obj.getBoundingRect().top - obj.cornerSize / <span class="number">2</span> &lt; <span class="number">0</span> ||</span><br><span class="line">          obj.getBoundingRect().left - obj.cornerSize / <span class="number">2</span> &lt; <span class="number">0</span></span><br><span class="line">        ) &#123;</span><br><span class="line">          obj.top = <span class="built_in">Math</span>.max(</span><br><span class="line">            obj.top,</span><br><span class="line">            obj.top - obj.getBoundingRect().top + obj.cornerSize / <span class="number">2</span></span><br><span class="line">          );</span><br><span class="line">          obj.left = <span class="built_in">Math</span>.max(</span><br><span class="line">            obj.left,</span><br><span class="line">            obj.left - obj.getBoundingRect().left + obj.cornerSize / <span class="number">2</span></span><br><span class="line">          );</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (</span><br><span class="line">          obj.getBoundingRect().top +</span><br><span class="line">            obj.getBoundingRect().height +</span><br><span class="line">            obj.cornerSize &gt;</span><br><span class="line">            obj.canvas.height ||</span><br><span class="line">          obj.getBoundingRect().left +</span><br><span class="line">            obj.getBoundingRect().width +</span><br><span class="line">            obj.cornerSize &gt;</span><br><span class="line">            obj.canvas.width</span><br><span class="line">        ) &#123;</span><br><span class="line">          obj.top = <span class="built_in">Math</span>.min(</span><br><span class="line">            obj.top,</span><br><span class="line">            obj.canvas.height -</span><br><span class="line">              obj.getBoundingRect().height +</span><br><span class="line">              obj.top -</span><br><span class="line">              obj.getBoundingRect().top -</span><br><span class="line">              obj.cornerSize / <span class="number">2</span></span><br><span class="line">          );</span><br><span class="line">          obj.left = <span class="built_in">Math</span>.min(</span><br><span class="line">            obj.left,</span><br><span class="line">            obj.canvas.width -</span><br><span class="line">              obj.getBoundingRect().width +</span><br><span class="line">              obj.left -</span><br><span class="line">              obj.getBoundingRect().left -</span><br><span class="line">              obj.cornerSize / <span class="number">2</span></span><br><span class="line">          );</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加签章</span></span><br><span class="line">    addSignature() &#123;</span><br><span class="line">      fabric.Image.fromURL(</span><br><span class="line">        <span class="string">`http://<span class="subst">$&#123;<span class="built_in">window</span>.location.host&#125;</span>/static/imgs/dog3.png`</span>,</span><br><span class="line">        (oImg) =&gt; &#123;</span><br><span class="line">          oImg.set(&#123;</span><br><span class="line">            left: <span class="keyword">this</span>.whDatas.width / <span class="number">2</span> - <span class="number">50</span>,</span><br><span class="line">            top: <span class="keyword">this</span>.whDatas.height / <span class="number">2</span> - <span class="number">100</span>,</span><br><span class="line">            width: <span class="number">400</span>,</span><br><span class="line">            height: <span class="number">400</span>,</span><br><span class="line">            angle: <span class="number">10</span>,</span><br><span class="line">            scaleX: <span class="number">0.6</span>,</span><br><span class="line">            scaleY: <span class="number">0.6</span>,</span><br><span class="line">          &#125;);</span><br><span class="line">          oImg.scale(<span class="number">0.5</span>); <span class="comment">//图片缩小一半</span></span><br><span class="line">          <span class="keyword">this</span>.canvas.add(oImg);</span><br><span class="line">        &#125;</span><br><span class="line">      );</span><br><span class="line"></span><br><span class="line">      <span class="comment">// let imgElement = document.getElementById("img"); //声明我们的图片</span></span><br><span class="line">      <span class="comment">// let imgInstance = new fabric.Image(imgElement, &#123;</span></span><br><span class="line">      <span class="comment">//   //设置图片位置和样子</span></span><br><span class="line">      <span class="comment">//   left: 100,</span></span><br><span class="line">      <span class="comment">//   top: 100,</span></span><br><span class="line">      <span class="comment">//   width: 200,</span></span><br><span class="line">      <span class="comment">//   height: 200,</span></span><br><span class="line">      <span class="comment">//   angle: 30, //设置图形顺时针旋转角度</span></span><br><span class="line">      <span class="comment">// &#125;);</span></span><br><span class="line">      <span class="comment">// this.canvas.add(imgInstance);</span></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除签章</span></span><br><span class="line">    removeSignature() &#123;</span><br><span class="line">      <span class="keyword">this</span>.canvas.remove(<span class="keyword">this</span>.canvas.getObjects()[<span class="number">0</span>]);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成传给后端的数据</span></span><br><span class="line">    getSignature() &#123;</span><br><span class="line">      <span class="keyword">let</span> data = <span class="keyword">this</span>.canvas.getObjects()[<span class="number">0</span>];</span><br><span class="line">      <span class="comment">// console.log(data);</span></span><br><span class="line">      <span class="keyword">this</span>.signaData = &#123;</span><br><span class="line">        width: data.width,</span><br><span class="line">        height: data.height,</span><br><span class="line">        top: data.top,</span><br><span class="line">        left: data.left,</span><br><span class="line">        angle: data.angle,</span><br><span class="line">        translateX: data.translateX,</span><br><span class="line">        translateY: data.translateY,</span><br><span class="line">        scaleX: data.scaleX,</span><br><span class="line">        scaleY: data.scaleY,</span><br><span class="line">        pageNum: <span class="keyword">this</span>.$refs.preview.pageNum,</span><br><span class="line">      &#125;;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>.signaData);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样，简单的预览盖章就实现了</p>
+
+            </div>
+        </div>
+        
+        
+    <div class="post__license">
+        <p>
+            <strong>本文作者：</strong>cshenger
+        </p>
+        <p>
+            <strong>
+                本文链接：
+            </strong>
+            <a href="http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/">http://cshenger.github.io/2020/08/10/使用fabric-js-pdf-js实现简易盖章/</a>
+        </p>
+        
+    </div>
+
+        
+        
+        <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2020-08-10
+    </p>
+</div>
+        
+        
+        <div class="post-cats post-card__cats">
+    
+        <a href="/categories/学习/" class="post-cats__link button">学习</a>
+    
+    
+        <a href="/tags/canvas/" class="post-tags__link button"># canvas</a>
+    
+        <a href="/tags/pdf-js/" class="post-tags__link button"># pdf.js</a>
+    
+        <a href="/tags/fabric-js/" class="post-tags__link button"># fabric.js</a>
+    
+        <a href="/tags/vue/" class="post-tags__link button"># vue</a>
+    
+</div>
+        
+    </article>
+    
+    <div class="post__comments content-card">
+        
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+    
+</div>
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>Copyright © 2020</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+
+
+
+
+
+    
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+        <script>
+            var valineConfig = {"enable":true,"appId":"zhSx5fBGDTotaBtwzbb8jDIY-gzGzoHsz","appKey":"lRf5wAu3YNMYRUFHu6cA1aGu","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>
