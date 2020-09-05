@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>Nestjs入门学习笔记 | cshenger</title>
+    
+    <meta name="keywords" content="node.js, nest.js, 后端">
+    
+
+    <!-- OpenGraph -->
+    
+    <meta name="description" content="有一天忽然听说了有一个后台框架叫nest.js，就在网上找了一段视频入了一下门，决定写个入门学习笔记。 初识与安装nest.js也并不是什么全新的框架，正如官网所说：  Nest.js是一个渐进的Node.js框架，可以在TypeScript和JavaScript(ES6、ES7、ES8)之上构建高效、可伸缩的企业级服务器端应用程序。它的核心思想是提供了一个层与层直接的耦合度极小、抽象化极高的一个">
+<meta name="keywords" content="node.js,nest.js,后端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nestjs入门学习笔记">
+<meta property="og:url" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/index.html">
+<meta property="og:site_name" content="cshenger">
+<meta property="og:description" content="有一天忽然听说了有一个后台框架叫nest.js，就在网上找了一段视频入了一下门，决定写个入门学习笔记。 初识与安装nest.js也并不是什么全新的框架，正如官网所说：  Nest.js是一个渐进的Node.js框架，可以在TypeScript和JavaScript(ES6、ES7、ES8)之上构建高效、可伸缩的企业级服务器端应用程序。它的核心思想是提供了一个层与层直接的耦合度极小、抽象化极高的一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/tree.png">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/document.png">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi2.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi3.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi4.jpg">
+<meta property="og:updated_time" content="2020-09-05T13:56:59.855Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nestjs入门学习笔记">
+<meta name="twitter:description" content="有一天忽然听说了有一个后台框架叫nest.js，就在网上找了一段视频入了一下门，决定写个入门学习笔记。 初识与安装nest.js也并不是什么全新的框架，正如官网所说：  Nest.js是一个渐进的Node.js框架，可以在TypeScript和JavaScript(ES6、ES7、ES8)之上构建高效、可伸缩的企业级服务器端应用程序。它的核心思想是提供了一个层与层直接的耦合度极小、抽象化极高的一个">
+<meta name="twitter:image" content="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/tree.png">
+    
+
+    <!-- feed -->
+    
+
+    <link rel="stylesheet" href="/css/style/main.css">
+
+    
+
+    
+    
+    <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+    
+    <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+    
+    
+    
+
+    
+    <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+    
+
+    
+
+</head>
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                cshenger 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="cover-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="cover-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="cover-menu button">
+                        归档
+                    </a>
+                
+            </div>
+        
+        
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"/>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"/>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="dropdown-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="dropdown-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="dropdown-menu button">
+                        归档
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        Nestjs入门学习笔记
+    </h1>
+    <div class="post-title__meta">
+        
+        <a href="/archives/2020/09/" class="button">
+    2020-09-05
+</a>
+        
+        
+        
+    <span class="separate-dot"></span><a href="/categories/学习/" class="button">学习</a>
+
+
+        
+        
+     
+ 
+
+ 
+    </div>
+</div>
+
+
+<div class="post__with-side">
+    <aside class="post-side">
+        <div class="post-side__toc">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#初识与安装"><span class="toc-text">初识与安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#父层代码与接口搭建"><span class="toc-text">父层代码与接口搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#帖子的开发"><span class="toc-text">帖子的开发</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#接口的测试"><span class="toc-text">接口的测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#测试创建帖子"><span class="toc-text">测试创建帖子</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li></ol>
+        </div>
+    </aside>
+    <article class="post content-card">
+        <div class="post__header">
+            
+            
+            
+            <!-- 
+                    
+    <div class="post__expire" id="post-expired-notify">
+        <p>
+            本文最后更新于 <span id="expire-date"></span> 天前，文中部分描述可能已经过时。
+        </p>
+    </div>
+    <script>
+        (() => {
+            var update = Date.parse("2020-09-05"),
+                date = new Date(),
+                now = date.getTime(),
+                expire = now - update,
+                expire_days = Math.floor(expire/(24*3600*1000));
+            if (expire_days >= 120) {
+                document.querySelectorAll('#expire-date')[0].innerHTML = expire_days;
+                document.querySelectorAll('#post-expired-notify')[0].style.display = 'block';
+            }
+        })();
+    </script>
+
+                 -->
+        </div>
+        <div class="post__content">
+            <div class="md-content">
+                <p>有一天忽然听说了有一个后台框架叫<a href="https://nestjs.com/" target="_blank" rel="noopener">nest.js</a>，就在网上找了一段视频入了一下门，决定写个入门学习笔记。</p>
+<h1 id="初识与安装"><a href="#初识与安装" class="headerlink" title="初识与安装"></a>初识与安装</h1><p>nest.js也并不是什么全新的框架，正如官网所说：</p>
+<blockquote>
+<p>Nest.js是一个渐进的Node.js框架，可以在TypeScript和JavaScript<br>(ES6、ES7、ES8)之上构建高效、可伸缩的企业级服务器端应用程序。它的核心思想是提供了一个层与层直接的耦合度极小、抽象化极高的一个架构体系。</p>
+</blockquote>
+<p>实际上nest.js所做的工作是制定了一套后台开发的标准，使用者在这套标准上可以轻松的开发出易于维护的后台接口项目。目前nest.js提供了基于express和Fastify这两个框架的开发标准。我看的教程是基于express，所以实际使用中还需要安装官方包<strong>platform-express</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install @nestjs/platform-express --save</span><br></pre></td></tr></table></figure></p>
+<p>只需要按照官方文档进行安装和初始化项目就可以了，这之后你首先会得到一个基础的模板：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">src</span><br><span class="line">├── app.controller.ts</span><br><span class="line">├── app.module.ts</span><br><span class="line">└── main.ts</span><br></pre></td></tr></table></figure></p>
+<p>正如你所看到的文件结构，教程评论里我看到有做后端的网友说这套思想很像springMVC。然而我因为也不搞后端，所以是不是我也不知道。但是这个结构与angular.js的思想倒是类似，即模型——视图——控制器。视频教程主要开发了一个简易的博客系统。我结合代码说明，整个项目结构如图所示：<br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/tree.png" alt="项目结构"><br>posts文件夹中就是博客相关的代码。</p>
+<p>nest.js的主入口文件是最外层的app相关，而每一个子模块则分别建立在不同的文件夹中由子到父形成项目结构。</p>
+<h1 id="父层代码与接口搭建"><a href="#父层代码与接口搭建" class="headerlink" title="父层代码与接口搭建"></a>父层代码与接口搭建</h1><p>nest.js的实际开发中，提供了一个实时生成api文档的包<strong>swagger-ui-express</strong>这使得开发出来的接口可以被实时预览与测试。我们也可以把它理解成是这个项目的视图层。不过我们先从最外层的模块看起：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// app.module.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; Module &#125; <span class="keyword">from</span> <span class="string">'@nestjs/common'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppController &#125; <span class="keyword">from</span> <span class="string">'./app.controller'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppService &#125; <span class="keyword">from</span> <span class="string">'./app.service'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; PostsModule &#125; <span class="keyword">from</span> <span class="string">'./posts/posts.module'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; TypegooseModule &#125; <span class="keyword">from</span> <span class="string">'nestjs-typegoose'</span>;</span><br><span class="line"></span><br><span class="line">@Module(&#123;</span><br><span class="line">  <span class="comment">// 这里引入官方的的mongodb模块和后续编写的博客模块</span></span><br><span class="line">  imports: [</span><br><span class="line">    TypegooseModule.forRoot(<span class="string">'mongodb://localhost:27017/nest-blog-api'</span>, &#123;</span><br><span class="line">      useNewUrlParser: <span class="literal">true</span>,</span><br><span class="line">    &#125;),</span><br><span class="line">    PostsModule,           <span class="comment">// 自己编写的博客模块</span></span><br><span class="line">  ],</span><br><span class="line">  controllers: [AppController], <span class="comment">// 入口app的控制器</span></span><br><span class="line">  providers: [AppService],    <span class="comment">// app的依赖注入</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>是不是有那么一点angular的味道了，控制器这里相对简单<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// app.controller.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; Controller, Get &#125; <span class="keyword">from</span> <span class="string">'@nestjs/common'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ApiTags &#125; <span class="keyword">from</span> <span class="string">'@nestjs/swagger'</span>;</span><br><span class="line"></span><br><span class="line">@Controller()  <span class="comment">// 控制器的装饰器</span></span><br><span class="line">@ApiTags(<span class="string">'默认'</span>) <span class="comment">// api文档的标题</span></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppController</span> </span>&#123;    </span><br><span class="line">  @Get() <span class="comment">// 装饰一个get请求</span></span><br><span class="line">  index(): string &#123; <span class="comment">// 定义请求为index</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Index'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们看一下被作为 <strong>“视图层”</strong>main.ts<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; NestFactory &#125; <span class="keyword">from</span> <span class="string">'@nestjs/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; SwaggerModule, DocumentBuilder &#125; <span class="keyword">from</span> <span class="string">'@nestjs/swagger'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppModule &#125; <span class="keyword">from</span> <span class="string">'./app.module'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ValidationPipe &#125; <span class="keyword">from</span> <span class="string">'@nestjs/common'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">bootstrap</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> app = <span class="keyword">await</span> NestFactory.create(AppModule); <span class="comment">// 通过异步方式引入app模块</span></span><br><span class="line"></span><br><span class="line">  app.useGlobalPipes(<span class="keyword">new</span> ValidationPipe());</span><br><span class="line"></span><br><span class="line"> <span class="comment">// 通过@nestjs/swagger产生后端文档的标题和内容</span></span><br><span class="line">  <span class="keyword">const</span> options = <span class="keyword">new</span> DocumentBuilder()</span><br><span class="line">    .setTitle(<span class="string">'Nestjs 博客API'</span>)</span><br><span class="line">    .setDescription(<span class="string">'我的第一个nest项目'</span>)</span><br><span class="line">    .setVersion(<span class="string">'1.0'</span>)</span><br><span class="line">    .build();</span><br><span class="line">  <span class="keyword">const</span> <span class="built_in">document</span> = SwaggerModule.createDocument(app, options);</span><br><span class="line">  SwaggerModule.setup(<span class="string">'api-docs'</span>, app, <span class="built_in">document</span>); <span class="comment">// 设置文档地址</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">await</span> app.listen(<span class="number">3000</span>);</span><br><span class="line">&#125;</span><br><span class="line">bootstrap();</span><br></pre></td></tr></table></figure></p>
+<p>那么在这一切编写完成之后，访问localhost:3000应该可以看到返回的“index”，说明项目生效，而访问==<a href="http://localhost:3000/api-docs/==" target="_blank" rel="noopener">http://localhost:3000/api-docs/==</a> 就可以看到nest.js生成的后台文档了<br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/document.png" alt="文档"><br>下面的帖子是post文件夹里面的内容，可以看到在开发过程中nest.js大量使用装饰器的思想简化代码，这种思想在帖子的开发中用途广泛。</p>
+<h1 id="帖子的开发"><a href="#帖子的开发" class="headerlink" title="帖子的开发"></a>帖子的开发</h1><p>从之前的截图来看，帖子好像没有“视图层”，实际上帖子的视图层和控制器是在一起相辅相成的。我们先从帖子模块看起：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// posts.module.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; Module &#125; <span class="keyword">from</span> <span class="string">'@nestjs/common'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; TypegooseModule &#125; <span class="keyword">from</span> <span class="string">'nestjs-typegoose'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; PostsController &#125; <span class="keyword">from</span> <span class="string">'./posts.controller'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Post &#125; <span class="keyword">from</span> <span class="string">'./post.model'</span>;</span><br><span class="line"></span><br><span class="line">@Module(&#123;</span><br><span class="line">  imports: [TypegooseModule.forFeature([Post])], <span class="comment">// 引入帖子模型</span></span><br><span class="line">  controllers: [PostsController], <span class="comment">// 引入帖子控制器</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">PostsModule</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在帖子模块的这一层我们首次涉及到模型的概念，对比最外层的app.module.ts，我们发现实际上那里我们引入的是帖子的模块。所以装饰器 @Module 装饰器实际上分饰了两个角色：</p>
+<ol>
+<li>在父层用于引入各个子模块</li>
+<li>在具体的子模块中则引入具体的模块模型</li>
+</ol>
+<p>当然，在子模块中依旧可以引入孙模块，这个教程不涉及这么复杂的调用。接下来看一下帖子的模型是什么<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// post.model.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; prop &#125; <span class="keyword">from</span> <span class="string">'@typegoose/typegoose'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Post</span> </span>&#123;</span><br><span class="line">  @prop()</span><br><span class="line">  title: string;</span><br><span class="line">  @prop()</span><br><span class="line">  content: string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>帖子的模型非常简单，这一模型也是会存到数据库中的具体结构，在MongoDB中最终存入表的也就是自动生成的ID，帖子标题和帖子内容。接下来就看看最关键的帖子控制器都做了什么<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// posts.controller.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  Controller,</span><br><span class="line">  Get,</span><br><span class="line">  Post,</span><br><span class="line">  Put,</span><br><span class="line">  Delete,</span><br><span class="line">  Body,</span><br><span class="line">  Param,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'@nestjs/common'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ApiTags, ApiOperation, ApiProperty &#125; <span class="keyword">from</span> <span class="string">'@nestjs/swagger'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; IsNotEmpty &#125; <span class="keyword">from</span> <span class="string">'class-validator'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; InjectModel &#125; <span class="keyword">from</span> <span class="string">'nestjs-typegoose'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Post <span class="keyword">as</span> PostSchema &#125; <span class="keyword">from</span> <span class="string">'./post.model'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ModelType &#125; <span class="keyword">from</span> <span class="string">'@typegoose/typegoose/lib/types'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义创建帖子的结构</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CreatePostDto</span> </span>&#123;</span><br><span class="line">  @ApiProperty(&#123; <span class="attr">description</span>: <span class="string">'帖子标题'</span>, <span class="attr">example</span>: <span class="string">'帖子标题'</span> &#125;) <span class="comment">// 生成帖子标题</span></span><br><span class="line">  @IsNotEmpty(&#123; <span class="attr">message</span>: <span class="string">'请填写标题'</span> &#125;) <span class="comment">// 通过第三方控制器校验帖子标题不可为空</span></span><br><span class="line">  title: string; <span class="comment">// 规定标题的类型 </span></span><br><span class="line">  @ApiProperty(&#123; <span class="attr">description</span>: <span class="string">'帖子内容'</span>, <span class="attr">example</span>: <span class="string">'帖子内容'</span> &#125;)</span><br><span class="line">  content: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Controller(<span class="string">'posts'</span>) <span class="comment">// 通过装饰器生成帖子的控制器</span></span><br><span class="line">@ApiTags(<span class="string">'帖子'</span>)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">PostsController</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(</span><br><span class="line">  	// 引入帖子模型写入到帖子控制器类中的构造函数里</span><br><span class="line">    @InjectModel(PostSchema) private readonly postModel: ModelType&lt;PostSchema&gt;,</span><br><span class="line">  ) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  @Get()</span><br><span class="line">  @ApiOperation(&#123; <span class="attr">summary</span>: <span class="string">'显示帖子列表'</span> &#125;)</span><br><span class="line">  <span class="keyword">async</span> index() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> <span class="keyword">this</span>.postModel.find();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这里以创建帖子的代码为例，其他代码大体雷同，不在赘述</span></span><br><span class="line">  @Post() <span class="comment">// 通过装饰器生成一个post请求api</span></span><br><span class="line">  @ApiOperation(&#123; <span class="attr">summary</span>: <span class="string">'创建帖子'</span> &#125;) <span class="comment">// 描述该api的作用 </span></span><br><span class="line">  <span class="keyword">async</span> create(@Body() createPostDto: CreatePostDto) &#123; <span class="comment">// 异步创建一篇帖子</span></span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">this</span>.postModel.create(createPostDto); <span class="comment">// 通过构造函数中postModel完成帖子创建</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      success: <span class="literal">true</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Get(<span class="string">':id'</span>)</span><br><span class="line">  @ApiOperation(&#123; <span class="attr">summary</span>: <span class="string">'帖子详情'</span> &#125;)</span><br><span class="line">  <span class="keyword">async</span> detail(@Param(<span class="string">'id'</span>) id: string) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> <span class="keyword">this</span>.postModel.findById(id);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Put(<span class="string">':id'</span>)</span><br><span class="line">  @ApiOperation(&#123; <span class="attr">summary</span>: <span class="string">'编辑帖子'</span> &#125;)</span><br><span class="line">  <span class="keyword">async</span> update(@Param(<span class="string">'id'</span>) id: string, @Body() updatePostDto: CreatePostDto) &#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">this</span>.postModel.findByIdAndUpdate(id, updatePostDto);</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      success: <span class="literal">true</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Delete(<span class="string">':id'</span>)</span><br><span class="line">  @ApiOperation(&#123; <span class="attr">summary</span>: <span class="string">'删除博客'</span> &#125;)</span><br><span class="line">  <span class="keyword">async</span> remove(@Param(<span class="string">'id'</span>) id: string) &#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">this</span>.postModel.findByIdAndDelete(id);</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      success: <span class="literal">true</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，通过创建控制器的同时在具体的api开发中也完成了文档的开发，一举两得，最终形成了之前截图看到的开发API接口文档。</p>
+<h1 id="接口的测试"><a href="#接口的测试" class="headerlink" title="接口的测试"></a>接口的测试</h1><p>然而，nest.js不仅仅是帮你完成了自动生成文档这一工作，你可以利用这文档直接测试一波你开发的接口是不是可以使用，有点类似一个乞丐版的postman。</p>
+<h2 id="测试创建帖子"><a href="#测试创建帖子" class="headerlink" title="测试创建帖子"></a>测试创建帖子</h2><p>再生成的文档中点击右上角的<strong>Try it out</strong><br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi.jpg" alt="创建帖子"><br>填写好测试内容，点击下方<strong>Execute</strong>即可完成帖子创建的测试<br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi2.jpg" alt="创建帖子"><br>这之后，你就可以得到测试的返回结果，以及生成的测试脚本<br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi3.jpg" alt="创建帖子"><br>你可以直接测试一下编写的获取帖子列表是不是成功的，测试方法也是一样的点击try it out -&gt; Execute<br><img src="//cshenger.github.io/2020/09/05/Nestjs入门学习笔记/create_tiezi4.jpg" alt="创建帖子"><br>可以发现是没有问题的。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Nest.js提供了一种基于<strong>模块与模块</strong>形成系统，而模块中通过<strong>模型——视图（伪）——控制器</strong>并配合一些依赖注入形成一个由上至下结构清晰的后台服务系统。<br>而具体的开发过程则大量使用装饰器的优势简化代码结构，并使代码结构逻辑清晰可寻，作为用来构建一套后台系统确实有着自己一些独特的优势。<br>作为一个做前端的我来说，在实际开发过程中确实让我感受到它对我这一不怎么具有后端开发基础的人来说所具有的友好。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://nestjs.com/" target="_blank" rel="noopener">https://nestjs.com/</a><br><a href="https://www.bilibili.com/video/BV1U441117xK" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1U441117xK</a></p>
+
+            </div>
+        </div>
+        
+        
+    <div class="post__license">
+        <p>
+            <strong>本文作者：</strong>cshenger
+        </p>
+        <p>
+            <strong>
+                本文链接：
+            </strong>
+            <a href="http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/">http://cshenger.github.io/2020/09/05/Nestjs入门学习笔记/</a>
+        </p>
+        
+    </div>
+
+        
+        
+        <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2020-09-05
+    </p>
+</div>
+        
+        
+        <div class="post-cats post-card__cats">
+    
+        <a href="/categories/学习/" class="post-cats__link button">学习</a>
+    
+    
+        <a href="/tags/node-js/" class="post-tags__link button"># node.js</a>
+    
+        <a href="/tags/nest-js/" class="post-tags__link button"># nest.js</a>
+    
+        <a href="/tags/后端/" class="post-tags__link button"># 后端</a>
+    
+</div>
+        
+    </article>
+    
+    <div class="post__comments content-card">
+        
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+    
+</div>
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>Copyright © 2020</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+
+
+
+
+
+    
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+        <script>
+            var valineConfig = {"enable":true,"appId":"zhSx5fBGDTotaBtwzbb8jDIY-gzGzoHsz","appKey":"lRf5wAu3YNMYRUFHu6cA1aGu","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>
