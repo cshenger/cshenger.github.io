@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>vue3 + ant-design-vue 简易入门 | cshenger</title>
+    
+    <meta name="keywords" content="vue, ant-design-vue">
+    
+
+    <!-- OpenGraph -->
+    
+    <meta name="description" content="最近忙里偷闲，看了下vue3的相关文档，想着写点东西熟悉一下新版的代码。恰好当前时间节点上你能在市面上成熟使用的vue3的UI框架放眼望去，也就只有阿里旗下的Ant Design Vue 2.0.0测试版。正好以前都是用element-ui的，所以就萌生了用这个框架搭一个非常简易的后台管理页面框架，主要目的是学习，用于实际生产估计还差点，主要是记录一下学习过程。  父子组件通信先来看下页面整体布局">
+<meta name="keywords" content="vue,ant-design-vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue3 + ant-design-vue 简易入门">
+<meta property="og:url" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/index.html">
+<meta property="og:site_name" content="cshenger">
+<meta property="og:description" content="最近忙里偷闲，看了下vue3的相关文档，想着写点东西熟悉一下新版的代码。恰好当前时间节点上你能在市面上成熟使用的vue3的UI框架放眼望去，也就只有阿里旗下的Ant Design Vue 2.0.0测试版。正好以前都是用element-ui的，所以就萌生了用这个框架搭一个非常简易的后台管理页面框架，主要目的是学习，用于实际生产估计还差点，主要是记录一下学习过程。  父子组件通信先来看下页面整体布局">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/1.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/2.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/3.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/4.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/5.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/6.jpg">
+<meta property="og:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/7.jpg">
+<meta property="og:updated_time" content="2020-10-16T10:39:12.006Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="vue3 + ant-design-vue 简易入门">
+<meta name="twitter:description" content="最近忙里偷闲，看了下vue3的相关文档，想着写点东西熟悉一下新版的代码。恰好当前时间节点上你能在市面上成熟使用的vue3的UI框架放眼望去，也就只有阿里旗下的Ant Design Vue 2.0.0测试版。正好以前都是用element-ui的，所以就萌生了用这个框架搭一个非常简易的后台管理页面框架，主要目的是学习，用于实际生产估计还差点，主要是记录一下学习过程。  父子组件通信先来看下页面整体布局">
+<meta name="twitter:image" content="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/1.jpg">
+    
+
+    <!-- feed -->
+    
+
+    <link rel="stylesheet" href="/css/style/main.css">
+
+    
+
+    
+    
+    <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+    
+    <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+    
+    
+    
+
+    
+    <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+    
+
+    
+
+</head>
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                cshenger 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="cover-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="cover-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="cover-menu button">
+                        归档
+                    </a>
+                
+            </div>
+        
+        
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"/>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" width="24" height="24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"/>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/tags/" class="dropdown-menu button">
+                        标签
+                    </a>
+                
+                    <a href="/categories/" class="dropdown-menu button">
+                        分类
+                    </a>
+                
+                    <a href="/archives/" class="dropdown-menu button">
+                        归档
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        vue3 + ant-design-vue 简易入门
+    </h1>
+    <div class="post-title__meta">
+        
+        <a href="/archives/2020/10/" class="button">
+    2020-10-16
+</a>
+        
+        
+        
+    <span class="separate-dot"></span><a href="/categories/学习/" class="button">学习</a>
+
+
+        
+        
+     
+ 
+
+ 
+    </div>
+</div>
+
+
+<div class="post__with-side">
+    <aside class="post-side">
+        <div class="post-side__toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#父子组件通信"><span class="toc-text">父子组件通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#路由的监听"><span class="toc-text">路由的监听</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全局配置axios"><span class="toc-text">全局配置axios</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结合ant-design-添加全局loading"><span class="toc-text">结合ant-design 添加全局loading</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于侧边栏的一点遗憾"><span class="toc-text">关于侧边栏的一点遗憾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </aside>
+    <article class="post content-card">
+        <div class="post__header">
+            
+            
+            
+            <!-- 
+                    
+    <div class="post__expire" id="post-expired-notify">
+        <p>
+            本文最后更新于 <span id="expire-date"></span> 天前，文中部分描述可能已经过时。
+        </p>
+    </div>
+    <script>
+        (() => {
+            var update = Date.parse("2020-10-16"),
+                date = new Date(),
+                now = date.getTime(),
+                expire = now - update,
+                expire_days = Math.floor(expire/(24*3600*1000));
+            if (expire_days >= 120) {
+                document.querySelectorAll('#expire-date')[0].innerHTML = expire_days;
+                document.querySelectorAll('#post-expired-notify')[0].style.display = 'block';
+            }
+        })();
+    </script>
+
+                 -->
+        </div>
+        <div class="post__content">
+            <div class="md-content">
+                <p>最近忙里偷闲，看了下vue3的相关文档，想着写点东西熟悉一下新版的代码。恰好当前时间节点上你能在市面上成熟使用的vue3的UI框架放眼望去，也就只有阿里旗下的<a href="https://2x.antdv.com/docs/vue/introduce-cn/" target="_blank" rel="noopener">Ant Design Vue 2.0.0测试版</a>。正好以前都是用element-ui的，所以就萌生了用这个框架搭一个非常简易的后台管理页面框架，主要目的是学习，用于实际生产估计还差点，主要是记录一下学习过程。</p>
+<p><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/1.jpg" alt="最终效果"></p>
+<h2 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h2><p>先来看下页面整体布局<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- App.vue --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a-config-provider</span> <span class="attr">:locale</span>=<span class="string">"locale"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">a-spin</span> <span class="attr">:spinning</span>=<span class="string">"spinning"</span> <span class="attr">tip</span>=<span class="string">"Loading..."</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">a-layout</span> <span class="attr">id</span>=<span class="string">"components-layout"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Sider</span> <span class="attr">:collapsed</span>=<span class="string">"collapsed"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">a-layout</span>&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="name">Header</span> <span class="attr">:collapsed</span>=<span class="string">"collapsed"</span> @<span class="attr">toggle-collapsed</span>=<span class="string">"collapsed = !collapsed"</span> /&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="name">Breadcrumb</span> /&gt;</span></span><br><span class="line">		  <span class="tag">&lt;<span class="name">a-layout-content</span> <span class="attr">:style</span>=<span class="string">"&#123;</span></span></span><br><span class="line"><span class="tag"><span class="string">		  margin: '24px 16px',</span></span></span><br><span class="line"><span class="tag"><span class="string">		  padding: '24px',</span></span></span><br><span class="line"><span class="tag"><span class="string">		  background: '#fff',</span></span></span><br><span class="line"><span class="tag"><span class="string">		  minHeight: '280px',</span></span></span><br><span class="line"><span class="tag"><span class="string">		&#125;"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">router-view</span>&gt;</span><span class="tag">&lt;/<span class="name">router-view</span>&gt;</span></span><br><span class="line">		  <span class="tag">&lt;/<span class="name">a-layout-content</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">a-layout</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;/<span class="name">a-layout</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">a-spin</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a-config-provider</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>这里直接把官网的样例拷过来，然后按照头部，侧边栏，面包屑分别拆成组件。那么在拆分之后我需要点击头部的按钮控制侧边栏的收缩与展开，这里既可以使用父子组件通过最上层的App.vue作为桥梁传值，也可以通过Vuex传值，我采用第一种办法。</p>
+<p>先在Header.vue中添加方法<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Header.vue --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">a-layout-header</span> <span class="attr">class</span>=<span class="string">"header"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">menu-unfold-outlined</span> <span class="attr">v-if</span>=<span class="string">"collapsed"</span> <span class="attr">class</span>=<span class="string">"trigger"</span> @<span class="attr">click</span>=<span class="string">"toggleCollapsed"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">menu-fold-outlined</span> <span class="attr">v-else</span> <span class="attr">class</span>=<span class="string">"trigger"</span> @<span class="attr">click</span>=<span class="string">"toggleCollapsed"</span> /&gt;</span></span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;/<span class="name">a-layout-header</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>在vue2.x的版本中子传父需要通过<strong>this.$emit</strong>传递，但是在vue3.x中如果代码写在setup中是不能使用this的，官方文档的办法是在setup的第二个参数中有一个emit方法，通过它实现传值。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Header.vue</span></span><br><span class="line">setup(props, &#123; emit &#125;) &#123;</span><br><span class="line">    <span class="keyword">const</span> toggleCollapsed = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      emit(<span class="string">"toggle-collapsed"</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      toggleCollapsed,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure></p>
+<p>我这里其实不需要传值，只是需要触一下点击事件，之后在父组件中直接切换一下true/false<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// App.vue</span><br><span class="line"><span class="tag">&lt;<span class="name">Header</span> <span class="attr">:collapsed</span>=<span class="string">"collapsed"</span> @<span class="attr">toggle-collapsed</span>=<span class="string">"collapsed = !collapsed"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>然后在侧边栏组件中获取到改变的collpased<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Sider</span> <span class="attr">:collapsed</span>=<span class="string">"collapsed"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>之后在侧边栏组件内获取父层带过来的数据与vue2.x的方式差不多，直接获取使用即可，如果你需要在setup中获取别忘了在setup方法上添加props参数就行。</p>
+<p><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/2.jpg" alt="收缩的侧边栏"></p>
+<h2 id="路由的监听"><a href="#路由的监听" class="headerlink" title="路由的监听"></a>路由的监听</h2><p>在侧边栏中如果路由改变我希望可以高亮当前的导航，同时我希望面包屑也要展示到的对应的路由，这里就需要用到vue3.x的watch方法，另外vue3.x还提供了一个watchEffect方法，官方文档说区别在于watchEffect可以做到立即触发监听，我这里使用的是watch。<br>如果你是直接使用官方脚手架生成的项目代码，那么vue-router的版本应该是4.0，这也是为了配合使用vue3.x的原因，在2.x中我们使用<strong>this.$route</strong>和<strong>this.$router</strong>获取路由信息和操作路由，在4.0的路由版本中这两个方法被放在了<strong>useRoute</strong>和<strong>useRouter</strong>里，所以要监听路由的变化则需要监听useRoute的变化，以面包屑为例<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Breadcrumb.vue</span></span><br><span class="line"><span class="keyword">import</span> &#123; watch, reactive, toRefs &#125; <span class="keyword">from</span> <span class="string">"vue"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; useRoute, useRouter &#125; <span class="keyword">from</span> <span class="string">"vue-router"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">"Breadcrumb"</span>,</span><br><span class="line">  setup() &#123;</span><br><span class="line">    <span class="keyword">const</span> route = useRoute();</span><br><span class="line">    <span class="keyword">const</span> router = useRouter();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> state = reactive(&#123;</span><br><span class="line">      matched: route.matched,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 监听路由变化</span></span><br><span class="line">    watch(</span><br><span class="line">      () =&gt; route,</span><br><span class="line">      (route) =&gt; &#123;</span><br><span class="line">        state.matched = route.matched;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        immediate: <span class="literal">true</span>,</span><br><span class="line">        deep: <span class="literal">true</span>,</span><br><span class="line">      &#125;</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> jumped = <span class="function">(<span class="params">path</span>) =&gt;</span> &#123;</span><br><span class="line">      router.push(&#123;</span><br><span class="line">        path: path,</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; ...toRefs(state), jumped &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>在watch的第一个参数中构建一个函数获取useRoute()，第二个参数则是监听变动之后的操作，这里我获取路由的matched数组并显示到面包屑上<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Breadcrumb.vue</span><br><span class="line"> <span class="tag">&lt;<span class="name">a-breadcrumb</span> <span class="attr">:style</span>=<span class="string">"&#123;</span></span></span><br><span class="line"><span class="tag"><span class="string">      padding: '24px',</span></span></span><br><span class="line"><span class="tag"><span class="string">      paddingBottom: '0',</span></span></span><br><span class="line"><span class="tag"><span class="string">    &#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-if</span>=<span class="string">"matched.length &gt; 0"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a-breadcrumb-item</span> <span class="attr">v-for</span>=<span class="string">"item in matched"</span> <span class="attr">:key</span>=<span class="string">"item.path"</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"javascript:;"</span> @<span class="attr">click</span>=<span class="string">"jumped(item.path)"</span>&gt;</span>&#123;&#123;</span><br><span class="line">          item.meta.title</span><br><span class="line">        &#125;&#125;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">a-breadcrumb-item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">a-breadcrumb</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>watch的第三个参数则用来配置是否立即执行监听和深度变动。这样路由变化，面包屑的信息会跟着变动，侧边栏类同，不再赘述。</p>
+<h2 id="全局配置axios"><a href="#全局配置axios" class="headerlink" title="全局配置axios"></a>全局配置axios</h2><p>另一项需求就是怎样在项目中全局引入<strong>axios</strong>，说实话我一开始确实不知道，官方文档也没看到太懂，后来在其他的文章中找到了使用方法。<br>首先引入自己封装过的axio方法，然后在createApp的全局配置中有一个<strong>globalProperties</strong>，将自己写的axios方法挂在到这个属性上就好了<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> $http <span class="keyword">from</span> <span class="string">"./api/axios"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = createApp(App);</span><br><span class="line">app.config.globalProperties.$http = $http;</span><br></pre></td></tr></table></figure></p>
+<p>接着在实际使用中与vue2.x略微有些不同，你需要在需要使用axios的组件中先引入vue提供<strong>getCurrentInstance</strong>方法，其中有一个<strong>ctx</strong>，获取全局变量，这就相当于2.x中的this了。然后在ctx中使用我自定义的$http方法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, getCurrentInstance &#125; <span class="keyword">from</span> <span class="string">"vue"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  setup() &#123;</span><br><span class="line">  	...</span><br><span class="line">    <span class="keyword">const</span> &#123; ctx &#125; = getCurrentInstance();</span><br><span class="line"></span><br><span class="line">    ctx.$http(&#123; <span class="attr">url</span>: <span class="string">"/test"</span>, <span class="attr">loading</span>: <span class="literal">true</span> &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  created() &#123;</span><br><span class="line">    <span class="comment">// this.$http(&#123; url: "/test" &#125;);</span></span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure></p>
+<p><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/3.jpg" alt="请求"><br>顺便一提，如果你按照老方法，在<strong>created</strong>或<strong>mounted</strong>使用<strong>this.$http</strong>也是可以正常调用的。</p>
+<h2 id="结合ant-design-添加全局loading"><a href="#结合ant-design-添加全局loading" class="headerlink" title="结合ant-design 添加全局loading"></a>结合ant-design 添加全局loading</h2><p>我原来的$htttp方法结合了element-ui在请求之前的拦截里写了一个loading的效果，用过element-ui的朋友应该知道你可以用一个服务的方式添加一个loading非常方便<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> loading = <span class="keyword">this</span>.$loading(&#123;</span><br><span class="line">  lock: <span class="literal">true</span>,</span><br><span class="line">  text: <span class="string">'Loading'</span>,</span><br><span class="line">  spinner: <span class="string">'el-icon-loading'</span>,</span><br><span class="line">  background: <span class="string">'rgba(0, 0, 0, 0.7)'</span></span><br><span class="line">&#125;);</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  loading.close();</span><br><span class="line">&#125;, <span class="number">2000</span>)</span><br></pre></td></tr></table></figure></p>
+<p>但是ant-design-vue没有这样的方法，要想实现全局loading就必须在最外层添加一个spin组件。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// App.vue</span><br><span class="line"><span class="tag">&lt;<span class="name">a-spin</span> <span class="attr">:spinning</span>=<span class="string">"spinning"</span> <span class="attr">tip</span>=<span class="string">"Loading..."</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a-layout</span> <span class="attr">id</span>=<span class="string">"components-layout"</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">  <span class="tag">&lt;/<span class="name">a-layout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a-spin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>这样的话，就需要spinning作为一个全局变量吗，在任何组件的任何地方，请求发起与结束之后改变该变量，vuex最适合这样的功能<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// strore/index.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> createStore(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    <span class="comment">// 全局loading</span></span><br><span class="line">    spinning: <span class="literal">false</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  mutations: &#123;</span><br><span class="line">  	<span class="comment">// 全局loading</span></span><br><span class="line">    changeSpinning(state, load) &#123;</span><br><span class="line">      state.spinning = load</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/4.jpg" alt="loading"></p>
+<p>接着，改造我原来的axios代码，另外，我希望在成功或失败之后有一个提示，那么，只需要将element-ui的message组件换成ant-design-vue的就好了<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">"@/store"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; message &#125; <span class="keyword">from</span> <span class="string">"ant-design-vue"</span>;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$http</span>(<span class="params">options, success, failure</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!!options.loading &amp;&amp; options.loading) &#123;</span><br><span class="line">    store.commit(<span class="string">"changeSpinning"</span>, <span class="literal">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> $axios(&#123;...&#125;)</span><br><span class="line">  	.then(...)</span><br><span class="line">	.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">		...</span><br><span class="line">		message.error(&#123;</span><br><span class="line">			content: err.message,</span><br><span class="line">			duration: <span class="number">5</span></span><br><span class="line">	  	&#125;);</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我很想吐槽一下，element-ui的提示框有关闭按钮的配置，为什么ant-design-vue的提示框居然不提供这样的配置啊，我觉得这是一个很普遍的需求吧。然后在组件中调用$http方法看到错误提示说明添加成功了。<br><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/5.jpg" alt="错误提示"></p>
+<h2 id="关于侧边栏的一点遗憾"><a href="#关于侧边栏的一点遗憾" class="headerlink" title="关于侧边栏的一点遗憾"></a>关于侧边栏的一点遗憾</h2><p>关于侧边栏，这里我说实话，卡住了。侧边栏的图标我希望使用ant-design原生的图标，但是2.0的ant-design的图标全部改成了组件引入的调用形式，我想了半天不知道怎样把组件图标添加到路由中带过来。所以退而求其次，我这里使用了font-awesome了。但是如果你直接使用第三方图标你就会掉到另一个坑里，就是收缩侧边栏的时候，文字还是在的<br><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/6.jpg" alt="侧边栏文字还在"><br>这一点其实比较好办，你只需要F12看一下官网demo的效果就会发现，在生成的html中图标这里添加了一个<strong>anticon</strong> 的样式类名<br><img src="//cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/7.jpg" alt="anticon"><br>所以，你只需要给自己添加的font-awesome图标上也加一个这样的类名就达到了“欺骗ant-design”的效果了/逃<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// sider/SubMenu.vue</span><br><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">v-if</span>=<span class="string">"menuInfo.meta.icon"</span> <span class="attr">class</span>=<span class="string">"anticon"</span>&gt;</span><span class="tag">&lt;<span class="name">i</span> <span class="attr">:class</span>=<span class="string">"menuInfo.meta.icon"</span>&gt;</span><span class="tag">&lt;/<span class="name">i</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#123;&#123; menuInfo.meta.title &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>如果有朋友知道这里怎样把ant-design-vue的原生图标加进去的方法欢迎告诉我，多谢，多谢。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>大体上这就是我粗略学习一下vue3.0和ant-design-vue2.0的感触吧，主要还是在于熟悉语法和掌握基础使用上。等过段时间，生态成熟了，世面上就会有很多不错的vue3.0的UI框架和后台管理脚手架任我们选择了，共同期待吧。</p>
+
+            </div>
+        </div>
+        
+        
+    <div class="post__license">
+        <p>
+            <strong>本文作者：</strong>cshenger
+        </p>
+        <p>
+            <strong>
+                本文链接：
+            </strong>
+            <a href="http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/">http://cshenger.github.io/2020/10/16/vue3+AntDesign简易入门/</a>
+        </p>
+        
+    </div>
+
+        
+        
+        <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2020-10-16
+    </p>
+</div>
+        
+        
+        <div class="post-cats post-card__cats">
+    
+        <a href="/categories/学习/" class="post-cats__link button">学习</a>
+    
+    
+        <a href="/tags/vue/" class="post-tags__link button"># vue</a>
+    
+        <a href="/tags/ant-design-vue/" class="post-tags__link button"># ant-design-vue</a>
+    
+</div>
+        
+    </article>
+    
+    <div class="post__comments content-card">
+        
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+    
+</div>
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>Copyright © 2020</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+
+
+
+
+
+    
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+        <script>
+            var valineConfig = {"enable":true,"appId":"zhSx5fBGDTotaBtwzbb8jDIY-gzGzoHsz","appKey":"lRf5wAu3YNMYRUFHu6cA1aGu","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>
